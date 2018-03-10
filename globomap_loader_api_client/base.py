@@ -25,9 +25,10 @@ class Base(object):
 
     logger = logging.getLogger(__name__)
 
-    def __init__(self, auth, driver_name):
+    def __init__(self, auth, driver_name, retries=3):
         self.auth = auth
         self.driver_name = driver_name
+        self.retries = retries
         self.session = Session()
 
     def _get_headers(self):
@@ -38,7 +39,7 @@ class Base(object):
         }
         return headers
 
-    def make_request(self, method, uri, params=None, data=None):
+    def make_request(self, method, uri, params=None, data=None, retries=0):
         request_url = '{}/v2/{}'.format(self.auth.api_url, uri)
         data = json.dumps(data)
         headers = self._get_headers()
@@ -62,29 +63,35 @@ class Base(object):
             raise exceptions.ApiError('Error in request')
 
         else:
-            content = response.json()
-            status_code = response.status_code
+            try:
+                return self._parser_response(response)
+            except exceptions.Unauthorized:
+                self.generate_token()
+                self._make_request(retries + 1)
+            except exceptions.ApiError as err:
+                if retries < self.retries:
+                    self._make_request(retries + 1)
+                raise exceptions.ApiError(err.message, err.status_code)
 
-            if self.logger.isEnabledFor(logging.DEBUG):
-                self.logger.debug('RESPONSE: %s %s %s %s' %
-                                  (method, request_url, content, status_code))
-            else:
-                self.logger.info('RESPONSE: %s %s %s' %
-                                 (method, request_url, status_code))
-
-            return self._parser_response(content, status_code)
-
-    def _parser_response(self, content, status_code):
+    def _parser_response(self, response):
+        content = response.json()
+        status_code = response.status_code
 
         if status_code == 202:
+            self.logger.debug('Success %s %s.', content, status_code)
             return content
         elif status_code == 400:
+            self.logger.error('ValidationError %s %s.', content, status_code)
             raise exceptions.ValidationError(content, status_code)
         elif status_code == 401:
+            self.logger.error('Unauthorized %s %s.', content, status_code)
             raise exceptions.Unauthorized(content, status_code)
         elif status_code == 403:
+            self.logger.error('Forbidden %s %s.', content, status_code)
             raise exceptions.Forbidden(content, status_code)
         elif status_code == 404:
+            self.logger.error('NotFound %s %s.', content, status_code)
             raise exceptions.NotFound(content, status_code)
         else:
+            self.logger.error('ApiError %s %s.', content, status_code)
             raise exceptions.ApiError(content, status_code)
