@@ -25,5 +25,5 @@ class Update(Base):
         return self.make_request(method='POST', uri='updates/', data=document)
 
     def get(self, key):
-        uri = 'updates/{}'.format(key)
+        uri = 'updates/job/{}'.format(key)
         return self.make_request(method='GET', uri=uri)

@@ -17,7 +17,8 @@ from unittest.mock import Mock
 from unittest.mock import patch
 
 import unittest2
-from globomap_api_client.update import Update
+
+from globomap_loader_api_client.update import Update
 
 
 class UpdateTest(unittest2.TestCase):
@@ -25,18 +26,26 @@ class UpdateTest(unittest2.TestCase):
     def tearDown(self):
         patch.stopall()
 
-    def test_post(self):
-        update = Update(Mock())
+    def test_post_dict(self):
+        update = Update(Mock(), 'driver_test')
         update.make_request = Mock()
         update.post({'doc': 1})
 
         update.make_request.assert_called_once_with(
-            method='POST', uri='updates', data={'doc': 1})
+            method='POST', uri='updates/', data=[{'doc': 1}])
 
-    def test_list(self):
-        update = Update(Mock())
+    def test_post_list(self):
+        update = Update(Mock(), 'driver_test')
         update.make_request = Mock()
-        update.list()
+        update.post([{'doc': 1}])
 
         update.make_request.assert_called_once_with(
-            method='GET', uri='updates')
+            method='POST', uri='updates/', data=[{'doc': 1}])
+
+    def test_list(self):
+        update = Update(Mock(), 'driver_test')
+        update.make_request = Mock()
+        update.get('key1')
+
+        update.make_request.assert_called_once_with(
+            method='GET', uri='updates/job/key1')
