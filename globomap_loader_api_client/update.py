@@ -19,11 +19,36 @@ from globomap_loader_api_client.base import Base
 class Update(Base):
 
     def post(self, document):
+        """Send to API a document or a list of document.
+
+        :param document: a document or a list of document.
+        :type document: dict or list
+        :return: Message with location of job
+        :rtype: dict
+        :raises ValidationError: if API returns status 400
+        :raises Unauthorized: if API returns status 401
+        :raises Forbidden: if API returns status 403
+        :raises NotFound: if API returns status 404
+        :raises ApiError: if API returns other status
+        """
+
         if type(document) is dict:
             document = [document]
 
         return self.make_request(method='POST', uri='updates/', data=document)
 
     def get(self, key):
+        """Return the status from a job.
+
+        :param key: id of job
+        :type document: dict or list
+        :return: message with location of job
+        :rtype: dict
+        :raises Unauthorized: if API returns status 401
+        :raises Forbidden: if API returns status 403
+        :raises NotFound: if API returns status 404
+        :raises ApiError: if API returns other status
+        """
+
         uri = 'updates/job/{}'.format(key)
         return self.make_request(method='GET', uri=uri)
