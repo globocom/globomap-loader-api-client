@@ -19,7 +19,32 @@ auth_inst = auth.Auth(
     password='password_api'
 )
 self.update = Update(auth=auth_inst, driver_name='aclapi')
-
+data = {
+    "action": "<action>",
+    "collection": "<edge_name>",
+    "key": "<key>",
+    "element": {
+    "from": "<id_document>",
+    "id": "<id_internal>",
+    "name": "<name>",
+    "properties": {
+        "key_name_1": "value_1",
+        "key_name_2": "value_2"
+    },
+    "properties_metadata": {
+        "key_name_1": {
+        "description": "description_1"
+        },
+        "key_name_2": {
+        "description": "description_2"
+        }
+    },
+    "provider": "<driver_name>",
+    "timestamp": "<timestamp>",
+    "to": "<id_document>"
+    },
+    "type": "edges"
+}
 res = self.update.post(data)
 ```
 
