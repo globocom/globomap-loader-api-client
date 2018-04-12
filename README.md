@@ -1,6 +1,6 @@
 # GloboMap Loader API Client
 
-Python client for [GloboMap Loader API](https://github.com/globocom/globomap-core-loader/blob/master/doc/api.md)
+Python client for API [Globo Map Core Loader] (https://github.com/globocom/globomap-core-loader)
 
 ## Starting Project:
 
