@@ -22,15 +22,29 @@ from globomap_loader_api_client import exceptions
 
 
 class Auth(object):
+    """Module to make authentication in API."""
+
     logger = logging.getLogger(__name__)
 
     def __init__(self, api_url, username, password):
+        """Make request in API to generate a token.
+
+        :param api_url: URL of API
+        :param username: username of API
+        :param password: password of API
+        :raises ValidationError: if API returns status 400
+        :raises Unauthorized: if API returns status 401
+        :raises ApiError: if API returns other status
+        """
+
         self.api_url = api_url
         self.username = username
         self.password = password
         self.generate_token()
 
     def generate_token(self):
+        """Make request in API to generate a token."""
+
         response = self._make_request()
         self.auth = response
         self.token = response['token']
