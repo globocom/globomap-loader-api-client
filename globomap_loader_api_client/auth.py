@@ -33,7 +33,7 @@ class Auth(object):
     def generate_token(self):
         response = self._make_request()
         self.auth = response
-        self.token = response['id']
+        self.token = response['token']
 
     def _get_headers(self):
         return {
@@ -51,7 +51,7 @@ class Auth(object):
                 url, data=json.dumps(data), headers=self._get_headers()
             )
 
-        except:
+        except Exception:
             self.logger.exception('Error in request')
             raise exceptions.ApiError('Error in request')
 

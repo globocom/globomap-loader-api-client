@@ -6,6 +6,10 @@ VERSION=$(shell python -c 'import globomap_loader_api_client; print(globomap_loa
 PROJECT_HOME = "`pwd`"
 
 help:
+	@echo
+	@echo "Please use 'make <target>' where <target> is one of"
+	@echo
+
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 setup: ## Install project dependencies
@@ -15,20 +19,13 @@ clean: ## Clear *.pyc files, etc
 	@rm -rf build dist *.egg-info
 	@find . \( -name '*.pyc' -o  -name '__pycache__' -o -name '**/*.pyc' -o -name '*~' \) -delete
 
-pep8: ## Check source-code for PEP8 compliance
-	@-pep8 globomap_loader_api_client
+tests: clean ## Make tests
+	@nosetests --verbose --rednose  --nocapture --cover-package=globomap_loader_api_client --with-coverage; coverage report -m
 
-exec_tests: clean pep8 ## Run all tests with coverage
-	@python3.6 -m unittest discover -s tests/
-	#@run --source=globomap_loader_api_client -m unittest2 discover -s tests/; coverage report -m
-
-tests:
-	@docker exec -it globomap_loader_api_client make exec_tests
-
-dist: clean
+dist: clean ## Make dist
 	@python setup.py sdist
 
-publish: clean dist
+publish: clean dist ## Make publish
 	@echo 'Ready to release version ${VERSION}? (ctrl+c to abort)' && read
 	twine upload dist/*
 	@git tag ${VERSION}
