@@ -39,12 +39,12 @@ class Base(object):
         }
         return headers
 
-    def make_request(self, method, uri, params=None, data=None, retries=0):
+    def make_request(self, method, uri, data=None, retries=0):
         request_url = '{}/v2/{}'.format(self.auth.api_url, uri)
         data = json.dumps(data)
         headers = self._get_headers()
         try:
-            if method in ('GET', 'DELETE'):
+            if method == 'GET':
                 response = self.session.request(
                     method,
                     request_url,
@@ -58,26 +58,36 @@ class Base(object):
                     headers=headers
                 )
             self.logger.info('REQUEST: %s %s' % (method, request_url))
-        except:
+        except Exception:
             self.logger.exception('Error in request')
             raise exceptions.ApiError('Error in request')
 
         else:
             try:
                 return self._parser_response(response)
-            except exceptions.Unauthorized:
-                self.generate_token()
-                self._make_request(retries + 1)
-            except exceptions.ApiError as err:
+
+            except exceptions.Unauthorized as err:
+
                 if retries < self.retries:
-                    self._make_request(retries + 1)
+                    self.auth.generate_token()
+                    return self.make_request(
+                        method=method, uri=uri, data=data, retries=retries + 1)
+
+                raise exceptions.Unauthorized(err.message, err.status_code)
+
+            except exceptions.ApiError as err:
+
+                if retries < self.retries:
+                    return self.make_request(
+                        method=method, uri=uri, data=data, retries=retries + 1)
+
                 raise exceptions.ApiError(err.message, err.status_code)
 
     def _parser_response(self, response):
         content = response.json()
         status_code = response.status_code
 
-        if status_code == 202:
+        if status_code in (200, 202):
             self.logger.debug('Success %s %s.', content, status_code)
             return content
         elif status_code == 400:
