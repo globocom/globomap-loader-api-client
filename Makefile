@@ -1,5 +1,3 @@
-.PHONY: help setup clean pep8 tests run
-
 # Version package
 VERSION=$(shell python -c 'import globomap_loader_api_client; print(globomap_loader_api_client.__version__)')
 
