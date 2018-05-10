@@ -18,7 +18,7 @@ auth_inst = auth.Auth(
     username='username_api',
     password='password_api'
 )
-self.update = Update(auth=auth_inst, driver_name='aclapi')
+self.update = Update(auth=auth_inst, driver_name='driver_x')
 data = {
     "action": "<action>",
     "collection": "<edge_name>",
