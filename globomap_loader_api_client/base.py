@@ -84,7 +84,12 @@ class Base(object):
                 raise exceptions.ApiError(err.message, err.status_code)
 
     def _parser_response(self, response):
-        content = response.json()
+
+        try:
+            content = response.json()
+        except json.JSONDecodeError:
+            content = response.text
+
         status_code = response.status_code
 
         if status_code in (200, 202):
