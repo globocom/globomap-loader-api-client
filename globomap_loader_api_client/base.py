@@ -41,7 +41,8 @@ class Base(object):
 
     def make_request(self, method, uri, data=None, retries=0):
         request_url = '{}/v2/{}'.format(self.auth.api_url, uri)
-        data = json.dumps(data)
+        if type(data) is dict:
+            data = json.dumps(data)
         headers = self._get_headers()
         try:
             if method == 'GET':
