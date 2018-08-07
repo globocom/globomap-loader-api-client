@@ -64,8 +64,15 @@ class Base(object):
             raise exceptions.ApiError('Error in request')
 
         else:
+
             try:
-                return self._parser_response(response)
+                content = response.json()
+            except json.JSONDecodeError:
+                content = response.text
+            status_code = response.status_code
+
+            try:
+                return self._parser_response(content, status_code)
 
             except exceptions.Unauthorized as err:
 
@@ -74,6 +81,7 @@ class Base(object):
                     return self.make_request(
                         method=method, uri=uri, data=data, retries=retries + 1)
 
+                self.logger.error('Unauthorized %s %s.', content, status_code)
                 raise exceptions.Unauthorized(err.message, err.status_code)
 
             except exceptions.ApiError as err:
@@ -82,16 +90,10 @@ class Base(object):
                     return self.make_request(
                         method=method, uri=uri, data=data, retries=retries + 1)
 
+                self.logger.error('ApiError %s %s.', content, status_code)
                 raise exceptions.ApiError(err.message, err.status_code)
 
-    def _parser_response(self, response):
-
-        try:
-            content = response.json()
-        except json.JSONDecodeError:
-            content = response.text
-
-        status_code = response.status_code
+    def _parser_response(self, content, status_code):
 
         if status_code in (200, 202):
             self.logger.debug('Success %s %s.', content, status_code)
@@ -100,7 +102,7 @@ class Base(object):
             self.logger.error('ValidationError %s %s.', content, status_code)
             raise exceptions.ValidationError(content, status_code)
         elif status_code == 401:
-            self.logger.error('Unauthorized %s %s.', content, status_code)
+            self.logger.warning('Unauthorized %s %s.', content, status_code)
             raise exceptions.Unauthorized(content, status_code)
         elif status_code == 403:
             self.logger.error('Forbidden %s %s.', content, status_code)
@@ -109,5 +111,5 @@ class Base(object):
             self.logger.error('NotFound %s %s.', content, status_code)
             raise exceptions.NotFound(content, status_code)
         else:
-            self.logger.error('ApiError %s %s.', content, status_code)
+            self.logger.warning('ApiError %s %s.', content, status_code)
             raise exceptions.ApiError(content, status_code)
