@@ -15,6 +15,7 @@
 """
 import json
 import logging
+import time
 
 from requests import Session
 
@@ -25,7 +26,7 @@ class Base(object):
 
     logger = logging.getLogger(__name__)
 
-    def __init__(self, auth, driver_name, retries=3):
+    def __init__(self, auth, driver_name, retries=10):
         self.auth = auth
         self.driver_name = driver_name
         self.retries = retries
@@ -77,6 +78,7 @@ class Base(object):
             except exceptions.Unauthorized as err:
 
                 if retries < self.retries:
+                    time.sleep(5 + (retries * 5))
                     self.auth.generate_token()
                     return self.make_request(
                         method=method, uri=uri, data=data, retries=retries + 1)
