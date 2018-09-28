@@ -20,6 +20,9 @@ clean: ## Clear *.pyc files, etc
 tests: clean ## Make tests
 	@nosetests --verbose --rednose  --nocapture --cover-package=globomap_loader_api_client --with-coverage; coverage report -m
 
+tests_ci: clean ## Make tests
+	@nosetests --verbose --rednose  --nocapture --cover-package=globomap_loader_api_client
+
 dist: clean ## Make dist
 	@python setup.py sdist
 
