@@ -94,16 +94,26 @@ class BaseTest(unittest2.TestCase):
     def test_post_401(self):
         mock_requests = patch(
             'globomap_loader_api_client.base.Session').start()
+        mock_time = patch(
+            'globomap_loader_api_client.base.time').start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=401)
 
         data = {'key': 'value'}
-        base = Base(Mock(), 'driver_test')
+        auth = Mock()
+        auth.generate_token.return_value = Mock()
+        base = Base(auth, 'driver_test', 4)
+        mock_time.sleep.return_value = 1
 
         with self.assertRaises(exceptions.Unauthorized):
             base.make_request('GET', 'path', data)
+
+        mock_time.sleep.assert_any_call(5 + 0)
+        mock_time.sleep.assert_any_call(5 + 5)
+        mock_time.sleep.assert_any_call(5 + 10)
+        mock_time.sleep.assert_any_call(5 + 15)
 
     def test_post_403(self):
         mock_requests = patch(
@@ -180,15 +190,23 @@ class BaseTest(unittest2.TestCase):
     def test_get_401(self):
         mock_requests = patch(
             'globomap_loader_api_client.base.Session').start()
+        mock_time = patch(
+            'globomap_loader_api_client.base.time').start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=401)
 
-        base = Base(Mock(), 'driver_test')
+        auth = Mock()
+        auth.generate_token.return_value = Mock()
+        base = Base(auth, 'driver_test', 3)
+        mock_time.sleep.return_value = 1
 
         with self.assertRaises(exceptions.Unauthorized):
             base.make_request('GET', 'path', None)
+        mock_time.sleep.assert_any_call(5 + 0)
+        mock_time.sleep.assert_any_call(5 + 5)
+        mock_time.sleep.assert_any_call(5 + 10)
 
     def test_get_403(self):
         mock_requests = patch(
