@@ -61,6 +61,12 @@ class Base(object):
                 )
             self.logger.info('REQUEST: %s %s' % (method, request_url))
         except Exception:
+
+            if retries < self.retries:
+                time.sleep(5 + (retries * 5))
+                return self.make_request(
+                    method=method, uri=uri, data=data, retries=retries + 1)
+
             self.logger.exception('Error in request')
             raise exceptions.ApiError('Error in request')
 
@@ -89,6 +95,7 @@ class Base(object):
             except exceptions.ApiError as err:
 
                 if retries < self.retries:
+                    time.sleep(5 + (retries * 5))
                     return self.make_request(
                         method=method, uri=uri, data=data, retries=retries + 1)
 
