@@ -26,12 +26,13 @@ from globomap_loader_api_client.base import Base
 
 class BaseTest(unittest2.TestCase):
 
+    TARGET = 'globomap_loader_api_client.base.Session'
+    
     def tearDown(self):
         patch.stopall()
 
     def test_post_error(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
@@ -44,8 +45,7 @@ class BaseTest(unittest2.TestCase):
             base.make_request('POST', 'path', data)
 
     def test_post_exception(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
 
         mock_requests.return_value.request.side_effect = Exception()
 
@@ -56,7 +56,7 @@ class BaseTest(unittest2.TestCase):
             base.make_request('POST', 'path', data)
 
     def test_post_202(self):
-        mock_session = patch('globomap_loader_api_client.base.Session').start()
+        mock_session = TARGET).start()
 
         response_mock = MagicMock(return_value={'message': 'message'})
         request_mock = mock_session.return_value.request
@@ -79,8 +79,7 @@ class BaseTest(unittest2.TestCase):
         )
 
     def test_post_400(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
@@ -92,8 +91,7 @@ class BaseTest(unittest2.TestCase):
             base.make_request('POST', 'path', data)
 
     def test_post_401(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
         mock_time = patch(
             'globomap_loader_api_client.base.time').start()
         response_mock = MagicMock(return_value={'message': 'Error'})
@@ -116,8 +114,7 @@ class BaseTest(unittest2.TestCase):
         mock_time.sleep.assert_any_call(5 + 15)
 
     def test_post_403(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
@@ -130,8 +127,7 @@ class BaseTest(unittest2.TestCase):
             base.make_request('POST', 'path', None, data)
 
     def test_post_404(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
@@ -144,8 +140,7 @@ class BaseTest(unittest2.TestCase):
             base.make_request('POST', 'path', None, data)
 
     def test_get_error(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
@@ -157,8 +152,7 @@ class BaseTest(unittest2.TestCase):
             base.make_request('GET', 'path', None)
 
     def test_get_exception(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
 
         mock_requests.return_value.request.side_effect = Exception()
         base = Base(Mock(), 'driver_test')
@@ -167,7 +161,7 @@ class BaseTest(unittest2.TestCase):
             base.make_request('GET', 'path', None)
 
     def test_get_200(self):
-        mock_session = patch('globomap_loader_api_client.base.Session').start()
+        mock_session = TARGET).start()
 
         response_mock = MagicMock(return_value={'message': 'message'})
         request_mock = mock_session.return_value.request
@@ -188,8 +182,7 @@ class BaseTest(unittest2.TestCase):
         )
 
     def test_get_401(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
         mock_time = patch(
             'globomap_loader_api_client.base.time').start()
         response_mock = MagicMock(return_value={'message': 'Error'})
@@ -209,8 +202,7 @@ class BaseTest(unittest2.TestCase):
         mock_time.sleep.assert_any_call(5 + 10)
 
     def test_get_403(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
@@ -222,8 +214,7 @@ class BaseTest(unittest2.TestCase):
             base.make_request('GET', 'path', None)
 
     def test_get_404(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.base.Session').start()
+        mock_requests = patch(TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(

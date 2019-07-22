@@ -25,12 +25,13 @@ from globomap_loader_api_client.auth import Auth
 
 class AuthTest(unittest2.TestCase):
 
+    TARGET = 'globomap_loader_api_client.auth.requests'
+
     def tearDown(self):
         patch.stopall()
 
     def test_generate_token(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.auth.requests').start()
+        mock_requests = patch(TARGET).start()
         token_data = {
             'token': 'token123',
             'expires_at': '2018-04-12T05:51:58.144271Z',
@@ -52,8 +53,7 @@ class AuthTest(unittest2.TestCase):
         )
 
     def test_generate_token_validator(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.auth.requests').start()
+        mock_requests = patch(TARGET).start()
 
         response_mock = MagicMock(return_value={'message': 'Error'})
         mock_requests.post.return_value = MagicMock(
@@ -63,8 +63,7 @@ class AuthTest(unittest2.TestCase):
             Auth('http://localhost', 'test', '123')
 
     def test_generate_token_unauthorized(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.auth.requests').start()
+        mock_requests = patch(TARGET).start()
 
         response_mock = MagicMock(return_value={'message': 'Error'})
         mock_requests.post.return_value = MagicMock(
@@ -74,8 +73,7 @@ class AuthTest(unittest2.TestCase):
             Auth('http://localhost', 'test', '123')
 
     def test_generate_token_error(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.auth.requests').start()
+        mock_requests = patch(TARGET).start()
 
         response_mock = MagicMock(return_value={'message': 'Error'})
         mock_requests.post.return_value = MagicMock(
@@ -85,8 +83,7 @@ class AuthTest(unittest2.TestCase):
             Auth('http://localhost', 'test', '123')
 
     def test_generate_token_exception(self):
-        mock_requests = patch(
-            'globomap_loader_api_client.auth.requests').start()
+        mock_requests = patch(TARGET).start()
 
         mock_requests.post = MagicMock(side_effect=Exception())
 
