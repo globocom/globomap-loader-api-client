@@ -32,31 +32,31 @@ class BaseTest(unittest2.TestCase):
         patch.stopall()
 
     def test_post_error(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=500)
 
         data = {'key': 'value'}
-        base = Base(Mock(), 'driver_test')
+        base = Base(Mock(), 'driver_test', retries=0)
 
         with self.assertRaises(exceptions.ApiError):
             base.make_request('POST', 'path', data)
 
     def test_post_exception(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
 
         mock_requests.return_value.request.side_effect = Exception()
 
         data = {'key': 'value'}
-        base = Base(Mock(), 'driver_test')
+        base = Base(Mock(), 'driver_test', retries=0)
 
         with self.assertRaises(exceptions.ApiError):
             base.make_request('POST', 'path', data)
 
     def test_post_202(self):
-        mock_session = TARGET).start()
+        mock_session = patch(self.TARGET).start()
 
         response_mock = MagicMock(return_value={'message': 'message'})
         request_mock = mock_session.return_value.request
@@ -66,7 +66,7 @@ class BaseTest(unittest2.TestCase):
         data = {'key': 'value'}
 
         base = Base(Mock(api_url='http://localhost', token='token123'),
-                    'driver_test')
+                    'driver_test', retries=0)
         base.make_request('POST', 'path', data)
 
         headers = {
@@ -79,19 +79,19 @@ class BaseTest(unittest2.TestCase):
         )
 
     def test_post_400(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=400)
 
         with self.assertRaises(exceptions.ValidationError):
-            base = Base(Mock(), 'driver_test')
+            base = Base(Mock(), 'driver_test', retries=0)
             data = {'key': 'value'}
             base.make_request('POST', 'path', data)
 
     def test_post_401(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
         mock_time = patch(
             'globomap_loader_api_client.base.time').start()
         response_mock = MagicMock(return_value={'message': 'Error'})
@@ -114,54 +114,54 @@ class BaseTest(unittest2.TestCase):
         mock_time.sleep.assert_any_call(5 + 15)
 
     def test_post_403(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=403)
 
         data = {'key': 'value'}
-        base = Base(Mock(), 'driver_test')
+        base = Base(Mock(), 'driver_test', retries=0)
 
         with self.assertRaises(exceptions.Forbidden):
             base.make_request('POST', 'path', None, data)
 
     def test_post_404(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=404)
 
         data = {'key': 'value'}
-        base = Base(Mock(), 'driver_test')
+        base = Base(Mock(), 'driver_test', retries=0)
 
         with self.assertRaises(exceptions.NotFound):
             base.make_request('POST', 'path', None, data)
 
     def test_get_error(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=500)
 
-        base = Base(Mock(), 'driver_test')
+        base = Base(Mock(), 'driver_test', retries=0)
 
         with self.assertRaises(exceptions.ApiError):
             base.make_request('GET', 'path', None)
 
     def test_get_exception(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
 
         mock_requests.return_value.request.side_effect = Exception()
-        base = Base(Mock(), 'driver_test')
+        base = Base(Mock(), 'driver_test', retries=0)
 
         with self.assertRaises(exceptions.ApiError):
             base.make_request('GET', 'path', None)
 
     def test_get_200(self):
-        mock_session = TARGET).start()
+        mock_session = patch(self.TARGET).start()
 
         response_mock = MagicMock(return_value={'message': 'message'})
         request_mock = mock_session.return_value.request
@@ -169,7 +169,7 @@ class BaseTest(unittest2.TestCase):
             json=response_mock, status_code=200)
 
         base = Base(Mock(api_url='http://localhost', token='token123'),
-                    'driver_test')
+                    'driver_test', retries=0)
         base.make_request('GET', 'path', None)
 
         headers = {
@@ -182,7 +182,7 @@ class BaseTest(unittest2.TestCase):
         )
 
     def test_get_401(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
         mock_time = patch(
             'globomap_loader_api_client.base.time').start()
         response_mock = MagicMock(return_value={'message': 'Error'})
@@ -202,25 +202,25 @@ class BaseTest(unittest2.TestCase):
         mock_time.sleep.assert_any_call(5 + 10)
 
     def test_get_403(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=403)
 
-        base = Base(Mock(), 'driver_test')
+        base = Base(Mock(), 'driver_test', retries=0)
 
         with self.assertRaises(exceptions.Forbidden):
             base.make_request('GET', 'path', None)
 
     def test_get_404(self):
-        mock_requests = patch(TARGET).start()
+        mock_requests = patch(self.TARGET).start()
         response_mock = MagicMock(return_value={'message': 'Error'})
 
         mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=404)
 
-        base = Base(Mock(), 'driver_test')
+        base = Base(Mock(), 'driver_test', retries=0)
 
         with self.assertRaises(exceptions.NotFound):
             base.make_request('GET', 'path', None)
