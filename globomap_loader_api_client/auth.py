@@ -48,6 +48,7 @@ class Auth(object):
         response = self._make_request()
         self.auth = response
         self.token = response['token']
+        self.expires_at = response['expires_at']
 
     def _get_headers(self):
         return {
