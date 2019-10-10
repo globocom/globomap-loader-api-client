@@ -15,8 +15,10 @@
 """
 import json
 import logging
-
+import pytz
 import requests
+
+from datetime import datetime
 
 from globomap_loader_api_client import exceptions
 
@@ -49,6 +51,19 @@ class Auth(object):
         self.auth = response
         self.token = response['token']
         self.expires_at = response['expires_at']
+
+    def has_expired_token(self):
+        date_expires = datetime.strptime(self.expires_at, '%Y-%m-%dT%H:%M:%S.%fZ')
+        utc_date_expires = date_expires.replace(tzinfo=pytz.utc)
+        local = pytz.timezone('America/Sao_Paulo')
+        localDatetime = utc_date_expires.astimezone(local)
+        diff = localDatetime.timestamp() - datetime.today().timestamp()
+        expired_token = False
+
+        if diff <= 0:
+            expired_token = True
+
+        return expired_token
 
     def _get_headers(self):
         return {
