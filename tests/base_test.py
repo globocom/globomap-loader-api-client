@@ -75,7 +75,7 @@ class BaseTest(unittest2.TestCase):
             'Authorization': 'Token token=token123'
         }
         request_mock.assert_called_once_with(
-            'POST', 'http://localhost/v2/path', data=json.dumps(data), headers=headers
+            'POST', 'http://localhost/v2/path', data=json.dumps(data), headers=headers, verify=True
         )
 
     def test_post_400(self):
@@ -178,7 +178,7 @@ class BaseTest(unittest2.TestCase):
             'Authorization': 'Token token=token123'
         }
         request_mock.assert_called_once_with(
-            'GET', 'http://localhost/v2/path', headers=headers
+            'GET', 'http://localhost/v2/path', headers=headers, verify=True
         )
 
     def test_get_401(self):

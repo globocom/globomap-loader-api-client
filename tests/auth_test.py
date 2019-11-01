@@ -25,7 +25,7 @@ from globomap_loader_api_client.auth import Auth
 
 class AuthTest(unittest2.TestCase):
 
-    TARGET = 'globomap_loader_api_client.auth.requests'
+    TARGET = 'globomap_loader_api_client.auth.Session'
 
     def tearDown(self):
         patch.stopall()
@@ -37,7 +37,7 @@ class AuthTest(unittest2.TestCase):
             'expires_at': '2018-04-12T05:51:58.144271Z',
         }
         response_mock = MagicMock(return_value=token_data)
-        mock_requests.post.return_value = MagicMock(
+        mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=200)
         Auth('http://localhost', 'test', '123')
 
@@ -48,15 +48,15 @@ class AuthTest(unittest2.TestCase):
         headers = {
             'Content-Type': 'application/json'
         }
-        mock_requests.post.assert_called_once_with(
-            'http://localhost/v2/auth/', data=json.dumps(data), headers=headers
+        mock_requests.return_value.request.assert_called_once_with(
+            'POST', 'http://localhost/v2/auth/', data=json.dumps(data), headers=headers, verify=True
         )
 
     def test_generate_token_validator(self):
         mock_requests = patch(self.TARGET).start()
 
         response_mock = MagicMock(return_value={'message': 'Error'})
-        mock_requests.post.return_value = MagicMock(
+        mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=400)
 
         with self.assertRaises(exceptions.ValidationError):
@@ -66,7 +66,7 @@ class AuthTest(unittest2.TestCase):
         mock_requests = patch(self.TARGET).start()
 
         response_mock = MagicMock(return_value={'message': 'Error'})
-        mock_requests.post.return_value = MagicMock(
+        mock_requests.return_value.request.return_value = MagicMock(
             json=response_mock, status_code=401)
 
         with self.assertRaises(exceptions.Unauthorized):
