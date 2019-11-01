@@ -20,6 +20,7 @@ import time
 from requests import Session
 
 from globomap_loader_api_client import exceptions
+from globomap_loader_api_client.settings import SSL_VERIFY
 
 
 class Base(object):
@@ -50,14 +51,16 @@ class Base(object):
                 response = self.session.request(
                     method,
                     request_url,
-                    headers=headers
+                    headers=headers,
+                    verify=SSL_VERIFY
                 )
             else:
                 response = self.session.request(
                     method,
                     request_url,
                     data=data,
-                    headers=headers
+                    headers=headers,
+                    verify=SSL_VERIFY
                 )
             self.logger.info('REQUEST: %s %s' % (method, request_url))
         except Exception:
