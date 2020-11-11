@@ -14,8 +14,8 @@
    limitations under the License.
 """
 import json
-from unittest.mock import MagicMock
-from unittest.mock import patch
+from mock import MagicMock
+from mock import patch
 
 import unittest2
 

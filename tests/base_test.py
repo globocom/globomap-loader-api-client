@@ -14,9 +14,9 @@
    limitations under the License.
 """
 import json
-from unittest.mock import MagicMock
-from unittest.mock import Mock
-from unittest.mock import patch
+from mock import MagicMock
+from mock import Mock
+from mock import patch
 
 import unittest2
 
@@ -27,7 +27,7 @@ from globomap_loader_api_client.base import Base
 class BaseTest(unittest2.TestCase):
 
     TARGET = 'globomap_loader_api_client.base.Session'
-    
+
     def tearDown(self):
         patch.stopall()
 
@@ -224,18 +224,3 @@ class BaseTest(unittest2.TestCase):
 
         with self.assertRaises(exceptions.NotFound):
             base.make_request('GET', 'path', None)
-
-        # self.assertEqual(base.auth.generate_token.call_count, 3)
-        # self.assertEqual(base.make_request.call_count, 3)
-            # self.assertEqual(base.auth.generate_token.call_count, 3)
-    #         .assert_called
-    # assert_called_once_with
-    #                     self.()
-    #                 return self.make_request(
-    #                     method=method, uri=uri, params=params,
-    #                     data=data, retries=retries+1)
-
-        # self.assertEqual(base.auth.generate_token.call_count, 3)
-            # self.auth.generate_token()
-            # self.make_request(method=method, uri=uri, params=params,
-            #                   data=data, retries=retries + 1)
